@@ -6,7 +6,7 @@ export default function Footer() {
         target='_blank'
         rel='noopener noreferrer'
       >
-        Learn web3 dev and earn crypto rewards at{" "}
+        Built by @hashequilibrium with the help of {" "}
         <span>Pointer</span>
       </a>
     </footer>

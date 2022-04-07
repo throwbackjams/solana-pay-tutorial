@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import BackLink from "../components/BackLink";
 import Loading from "../components/Loading";
 import { MakeTransactionInputData, MakeTransactionOutputData } from "./api/makeTransaction";
+import { findTransactionSignature, FindTransactionSignatureError } from "@solana/pay";
 
 export default function Checkout() {
   const router = useRouter();
@@ -87,6 +88,23 @@ export default function Checkout() {
     trySendTransaction()
   }, [transaction])
 
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const signatureInfo = await findTransactionSignature(connection, reference, {})
+        router.push('/confirmed')
+      } catch (e) {
+        if (e instanceof FindTransactionSignatureError) {
+          return;
+        }
+        console.error('Unknown error', e)
+      }
+    }, 500)
+    return () => { 
+      clearInterval(interval)
+    }
+  }, [])
+
   if (!publicKey) {
     return (
       <div className='flex flex-col gap-8 items-center'>
@@ -103,7 +121,7 @@ export default function Checkout() {
         <WalletMultiButton />
       {message ?
         <p>{message} Please approve the transaction using your wallet</p> :
-        <p>Creatining transaction<Loading /></p>
+        <p>Creating transaction<Loading /></p>
       }
     </div>
   )
